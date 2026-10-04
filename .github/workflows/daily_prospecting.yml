@@ -1,0 +1,42 @@
+name: Daily Morning Prospecting Engine
+
+on:
+  # Runs every morning at 02:00 UTC (07:30 AM IST) Monday through Friday
+  schedule:
+    - cron: '0 2 * * 1-5'
+
+  # Allows you to trigger the run manually from the GitHub UI anytime
+  workflow_dispatch:
+
+jobs:
+  run-engine:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Morning Prospecting Script
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          python apify_morning_engine.py
+
+      - name: Upload Daily Leads CSV as Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: daily-leads-${{ github.run_id }}
+          path: daily_leads_*.csv
+          retention-days: 14
