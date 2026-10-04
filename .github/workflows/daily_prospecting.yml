@@ -31,7 +31,7 @@ jobs:
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: |
-          python apify_morning_engine.py
+          python apify_morning_engine_api.py
 
       - name: Upload Daily Leads CSV as Artifact
         uses: actions/upload-artifact@v4
